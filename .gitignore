@@ -1,0 +1,27 @@
+# Cloudflared executable
+cloudflared.exe
+*.exe
+
+# Frontend
+smartproperty-ai/frontend/node_modules/
+smartproperty-ai/frontend/dist/
+smartproperty-ai/frontend/.env.local
+smartproperty-ai/frontend/.env.development.local
+smartproperty-ai/frontend/.env.test.local
+smartproperty-ai/frontend/.env.production.local
+smartproperty-ai/frontend/npm-debug.log*
+smartproperty-ai/frontend/yarn-debug.log*
+smartproperty-ai/frontend/yarn-error.log*
+
+# Backend
+smartproperty-ai/backend/__pycache__/
+smartproperty-ai/backend/*/__pycache__/
+smartproperty-ai/backend/*/*/__pycache__/
+smartproperty-ai/backend/.env
+smartproperty-ai/backend/venv/
+smartproperty-ai/backend/.venv/
+*.pyc
+
+# OS Files
+.DS_Store
+Thumbs.db
