@@ -36,11 +36,15 @@ const navItems = [
     }
 ];
 import { getAIAlerts } from '@/lib/api';
+import { getActiveUser } from '@/lib/auth';
 
 export default function Sidebar({ isOpen = false, onClose }) {
     const { pathname } = useLocation();
     const [alerts, setAlerts] = useState(0);
+    const [currentUser, setCurrentUser] = useState(null);
+
     useEffect(() => {
+        setCurrentUser(getActiveUser());
         // Fetch alert count
         getAIAlerts()
             .then(res => {
@@ -48,7 +52,7 @@ export default function Sidebar({ isOpen = false, onClose }) {
                 setAlerts(data.filter((a) => a.severity === 'high').length);
             })
             .catch(() => { });
-    }, []);
+    }, [pathname]);
     return (<aside className={`sidebar ${isOpen ? 'open' : ''}`}>
       {/* Logo */}
       <div className="sidebar-logo" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -126,7 +130,7 @@ export default function Sidebar({ isOpen = false, onClose }) {
           </Link>
         </div>
         <div style={{ fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>MANARA Properties</div>
-        <div>v1.0 · Admin Console</div>
+        <div>v1.0 · {currentUser?.role === 'manager' ? 'Manager Console' : 'Admin Console'}</div>
       </div>
     </aside>);
 }

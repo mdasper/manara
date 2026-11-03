@@ -8,12 +8,16 @@ import { setActiveUser } from '@/lib/auth';
 export default function LoginPage() {
   const navigate = useNavigate();
   const router = { push: (url) => navigate(url), replace: (url) => navigate(url, { replace: true }), back: () => navigate(-1) };
-  const [role, setRole] = useState('admin'); // 'admin' | 'tenant'
+  const [role, setRole] = useState('admin'); // 'admin' | 'manager' | 'tenant'
   const [tenantMode, setTenantMode] = useState('existing'); // 'existing' | 'new'
 
   // Admin credentials
   const [adminEmail, setAdminEmail] = useState('admin@manara.com');
   const [adminPassword, setAdminPassword] = useState('admin123');
+
+  // Manager credentials
+  const [managerEmail, setManagerEmail] = useState('manager@manara.com');
+  const [managerPassword, setManagerPassword] = useState('manager123');
 
   // Existing tenants list
   const [tenantsList, setTenantsList] = useState([]);
@@ -63,6 +67,17 @@ export default function LoginPage() {
       role: 'admin',
       name: 'MANARA Admin',
       email: adminEmail,
+    });
+    router.push('/dashboard');
+  };
+
+  // Manager login action
+  const handleManagerLogin = (e) => {
+    e.preventDefault();
+    setActiveUser({
+      role: 'manager',
+      name: 'MANARA Property Manager',
+      email: managerEmail,
     });
     router.push('/dashboard');
   };
@@ -207,7 +222,7 @@ export default function LoginPage() {
       {/* Main Centered Minimal Card */}
       <div style={{
         width: '100%',
-        maxWidth: role === 'tenant' && tenantMode === 'new' ? '540px' : '440px',
+        maxWidth: role === 'tenant' && tenantMode === 'new' ? '540px' : '460px',
         background: 'rgba(20, 20, 42, 0.7)',
         backdropFilter: 'blur(20px)',
         border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -217,13 +232,13 @@ export default function LoginPage() {
         transition: 'all 0.3s ease',
       }}>
 
-        {/* Clean Pill Switcher: Admin / Resident */}
+        {/* Clean 3-Pill Switcher: Admin / Manager / Resident */}
         <div style={{
           background: 'rgba(255, 255, 255, 0.04)',
           borderRadius: '12px',
           padding: '4px',
           display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
+          gridTemplateColumns: 'repeat(3, 1fr)',
           gap: '4px',
           marginBottom: '1.75rem',
           border: '1px solid rgba(255, 255, 255, 0.06)',
@@ -232,16 +247,17 @@ export default function LoginPage() {
             type="button"
             onClick={() => { setRole('admin'); setErrorMsg(''); setSuccessMsg(''); }}
             style={{
-              padding: '0.65rem 1rem',
+              padding: '0.65rem 0.5rem',
               borderRadius: '9px',
               border: 'none',
               fontWeight: 600,
-              fontSize: '0.85rem',
+              fontSize: '0.82rem',
               cursor: 'pointer',
               transition: 'all 0.2s',
               background: role === 'admin' ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' : 'transparent',
               color: role === 'admin' ? '#ffffff' : '#94a3b8',
               boxShadow: role === 'admin' ? '0 2px 10px rgba(99, 102, 241, 0.4)' : 'none',
+              whiteSpace: 'nowrap',
             }}
           >
             👑 Admin
@@ -249,18 +265,39 @@ export default function LoginPage() {
 
           <button
             type="button"
-            onClick={() => { setRole('tenant'); setErrorMsg(''); setSuccessMsg(''); }}
+            onClick={() => { setRole('manager'); setErrorMsg(''); setSuccessMsg(''); }}
             style={{
-              padding: '0.65rem 1rem',
+              padding: '0.65rem 0.5rem',
               borderRadius: '9px',
               border: 'none',
               fontWeight: 600,
-              fontSize: '0.85rem',
+              fontSize: '0.82rem',
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              background: role === 'manager' ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' : 'transparent',
+              color: role === 'manager' ? '#ffffff' : '#94a3b8',
+              boxShadow: role === 'manager' ? '0 2px 10px rgba(99, 102, 241, 0.4)' : 'none',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            💼 Manager
+          </button>
+
+          <button
+            type="button"
+            onClick={() => { setRole('tenant'); setErrorMsg(''); setSuccessMsg(''); }}
+            style={{
+              padding: '0.65rem 0.5rem',
+              borderRadius: '9px',
+              border: 'none',
+              fontWeight: 600,
+              fontSize: '0.82rem',
               cursor: 'pointer',
               transition: 'all 0.2s',
               background: role === 'tenant' ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)' : 'transparent',
               color: role === 'tenant' ? '#ffffff' : '#94a3b8',
               boxShadow: role === 'tenant' ? '0 2px 10px rgba(99, 102, 241, 0.4)' : 'none',
+              whiteSpace: 'nowrap',
             }}
           >
             🏠 Resident
@@ -368,7 +405,7 @@ export default function LoginPage() {
               fontSize: '0.75rem',
               color: '#64748b',
             }}>
-              Demo Account:{' '}
+              Demo Admin Account:{' '}
               <span
                 onClick={() => {
                   setAdminEmail('admin@manara.com');
@@ -377,6 +414,91 @@ export default function LoginPage() {
                 style={{ color: '#818cf8', cursor: 'pointer', textDecoration: 'underline' }}
               >
                 admin@manara.com
+              </span>
+            </div>
+          </form>
+        ) : role === 'manager' ? (
+          /* ─── MANAGER FORM ───────────────────────── */
+          <form onSubmit={handleManagerLogin}>
+            <div style={{ marginBottom: '1.25rem' }}>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.45rem' }}>
+                Manager Email
+              </label>
+              <input
+                type="email"
+                required
+                value={managerEmail}
+                onChange={e => setManagerEmail(e.target.value)}
+                placeholder="manager@manara.com"
+                style={{
+                  width: '100%',
+                  padding: '0.8rem 1rem',
+                  background: 'rgba(255, 255, 255, 0.04)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '10px',
+                  color: '#ffffff',
+                  fontSize: '0.9rem',
+                  outline: 'none',
+                }}
+              />
+            </div>
+
+            <div style={{ marginBottom: '1.5rem' }}>
+              <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 600, color: '#94a3b8', marginBottom: '0.45rem' }}>
+                Password
+              </label>
+              <input
+                type="password"
+                required
+                value={managerPassword}
+                onChange={e => setManagerPassword(e.target.value)}
+                placeholder="••••••••"
+                style={{
+                  width: '100%',
+                  padding: '0.8rem 1rem',
+                  background: 'rgba(255, 255, 255, 0.04)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)',
+                  borderRadius: '10px',
+                  color: '#ffffff',
+                  fontSize: '0.9rem',
+                  outline: 'none',
+                }}
+              />
+            </div>
+
+            <button
+              type="submit"
+              style={{
+                width: '100%',
+                padding: '0.85rem',
+                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                border: 'none',
+                borderRadius: '10px',
+                color: '#ffffff',
+                fontWeight: 700,
+                fontSize: '0.9rem',
+                cursor: 'pointer',
+                boxShadow: '0 4px 16px rgba(99, 102, 241, 0.35)',
+              }}
+            >
+              Sign In to Manager Console →
+            </button>
+
+            <div style={{
+              marginTop: '1.25rem',
+              textAlign: 'center',
+              fontSize: '0.75rem',
+              color: '#64748b',
+            }}>
+              Demo Manager Account:{' '}
+              <span
+                onClick={() => {
+                  setManagerEmail('manager@manara.com');
+                  setManagerPassword('manager123');
+                }}
+                style={{ color: '#818cf8', cursor: 'pointer', textDecoration: 'underline' }}
+              >
+                manager@manara.com
               </span>
             </div>
           </form>
