@@ -80,10 +80,14 @@ export default function TenantPortalPage() {
       const paymentsRes = await getTenantPayments(tenantId);
       setPayments(paymentsRes.data || []);
 
+      // Determine initial rent amount from active lease or tenant profile
+      const activeL = (leasesRes.data || []).find(l => l.renewal_status === 'active') || leasesRes.data?.[0];
+      const initialRent = activeL?.rent_amount || tenantRes.data?.current_rent || 0;
+      setPayAmount(initialRent);
+
       // Fetch maintenance tickets for this tenant's unit if available
-      const activeLease = (leasesRes.data || []).find(l => l.renewal_status === 'active') || leasesRes.data?.[0];
-      if (activeLease && activeLease.unit_id) {
-        const maintRes = await getMaintenance({ unit_id: activeLease.unit_id });
+      if (activeL && activeL.unit_id) {
+        const maintRes = await getMaintenance({ unit_id: activeL.unit_id });
         setMaintenanceTickets(maintRes.data || []);
       }
     } catch (err) {
@@ -104,6 +108,9 @@ export default function TenantPortalPage() {
     if (!maintenanceForm.title.trim()) return;
 
     const activeLease = leases.find(l => l.renewal_status === 'active') || leases[0];
+  const activeRent = activeLease?.rent_amount || tenantDetails?.current_rent || currentUser?.rent || 0;
+  const currentProperty = tenantDetails?.current_property || activeLease?.property_name || currentUser?.property || 'MANARA Living';
+  const currentUnit = tenantDetails?.current_unit || activeLease?.unit_number || currentUser?.unit || '';
     if (!activeLease) {
       alert('No active lease found to attach this maintenance request.');
       return;
@@ -144,12 +151,15 @@ export default function TenantPortalPage() {
   const handlePayRent = async () => {
     try {
       const activeLease = leases.find(l => l.renewal_status === 'active') || leases[0];
+  const activeRent = activeLease?.rent_amount || tenantDetails?.current_rent || currentUser?.rent || 0;
+  const currentProperty = tenantDetails?.current_property || activeLease?.property_name || currentUser?.property || 'MANARA Living';
+  const currentUnit = tenantDetails?.current_unit || activeLease?.unit_number || currentUser?.unit || '';
       if (!activeLease) return;
 
       // Add a simulated paid payment
       const paymentData = {
         lease_id: activeLease.id,
-        amount: payAmount || 15000,
+        amount: payAmount || activeRent,
         due_date: new Date().toISOString().split('T')[0],
         paid_date: new Date().toISOString().split('T')[0],
         status: 'paid',
@@ -196,6 +206,9 @@ export default function TenantPortalPage() {
   };
 
   const activeLease = leases.find(l => l.renewal_status === 'active') || leases[0];
+  const activeRent = activeLease?.rent_amount || tenantDetails?.current_rent || currentUser?.rent || 0;
+  const currentProperty = tenantDetails?.current_property || activeLease?.property_name || currentUser?.property || 'MANARA Living';
+  const currentUnit = tenantDetails?.current_unit || activeLease?.unit_number || currentUser?.unit || '';
 
   if (loading && !tenantDetails) {
     return (
@@ -266,7 +279,7 @@ export default function TenantPortalPage() {
             <div>
               <div style={{ fontSize: '0.85rem', fontWeight: 600 }}>{tenantDetails?.name || currentUser?.name}</div>
               <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)' }}>
-                {tenantDetails?.current_unit ? `Unit ${tenantDetails.current_unit}` : 'Resident'}
+                {currentUnit ? `Unit ${currentUnit}` : 'Resident'}
               </div>
             </div>
           </div>
@@ -304,15 +317,14 @@ export default function TenantPortalPage() {
                 Welcome, {tenantDetails?.name || currentUser?.name}! 👋
               </h2>
               <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', marginTop: '0.35rem' }}>
-                {tenantDetails?.current_property ? `Property: ${tenantDetails.current_property}` : 'MANARA Living Group'}
-                {tenantDetails?.current_unit ? ` · Unit: ${tenantDetails.current_unit}` : ''}
+                Property: {currentProperty}{currentUnit ? ` · Unit ${currentUnit}` : ''}
               </p>
             </div>
 
             <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
               <button
                 onClick={() => {
-                  setPayAmount(15000);
+                  setPayAmount(activeRent);
                   setShowPayModal(true);
                 }}
                 className="btn btn-primary"
@@ -343,23 +355,23 @@ export default function TenantPortalPage() {
               Allocated Unit
             </div>
             <div style={{ fontSize: '1.5rem', fontWeight: 800, marginTop: '0.4rem', color: 'var(--primary-light)' }}>
-              {tenantDetails?.current_unit ? `Unit ${tenantDetails.current_unit}` : 'Unit 3C'}
+              {currentUnit ? `Unit ${currentUnit}` : 'Assigned Unit'}
             </div>
             <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-              {tenantDetails?.current_property || 'GreenMall / Nexus Tower'}
+              {currentProperty}
             </div>
           </div>
 
           {/* Card 2: Rent Status */}
           <div className="card" style={{ padding: '1.25rem' }}>
             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase' }}>
-              Current Rent Due
+              Monthly Rent
             </div>
             <div style={{ fontSize: '1.5rem', fontWeight: 800, marginTop: '0.4rem', color: 'var(--success)' }}>
-              ₹15,000 / mo
+              ₹{Number(activeRent).toLocaleString('en-IN')} / mo
             </div>
             <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.25rem' }}>
-              Due on the 5th of every month
+              Due on the {activeLease?.rent_due_day || 5}th of every month
             </div>
           </div>
 
@@ -459,6 +471,10 @@ export default function TenantPortalPage() {
                     <span className="badge badge-success">{activeLease.renewal_status}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>Monthly Rent:</span>
+                    <span style={{ fontWeight: 700, color: 'var(--success)' }}>₹{Number(activeRent).toLocaleString('en-IN')} / mo</span>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <span style={{ color: 'var(--text-muted)' }}>Monthly Due Day:</span>
                     <span style={{ fontWeight: 600 }}>{activeLease.rent_due_day}th of each month</span>
                   </div>
@@ -493,7 +509,7 @@ export default function TenantPortalPage() {
 
               <button
                 onClick={() => {
-                  setPayAmount(15000);
+                  setPayAmount(activeRent);
                   setShowPayModal(true);
                 }}
                 className="btn btn-primary"
@@ -819,10 +835,10 @@ export default function TenantPortalPage() {
                 }}>
                   <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Amount Payable</div>
                   <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--success)' }}>
-                    ₹{payAmount.toLocaleString('en-IN')}
+                    ₹{Number(payAmount || activeRent).toLocaleString('en-IN')}
                   </div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-                    For {tenantDetails?.current_property || 'Assigned Property'} · Unit {tenantDetails?.current_unit || '3C'}
+                    For {currentProperty} · Unit {currentUnit}
                   </div>
                 </div>
 
@@ -841,7 +857,7 @@ export default function TenantPortalPage() {
                   className="btn btn-primary"
                   style={{ width: '100%', padding: '0.85rem', fontWeight: 700 }}
                 >
-                  Confirm & Pay ₹{payAmount.toLocaleString('en-IN')} →
+                  Confirm & Pay ₹{Number(payAmount || activeRent).toLocaleString('en-IN')} →
                 </button>
               </div>
             )}

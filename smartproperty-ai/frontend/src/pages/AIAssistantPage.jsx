@@ -9,8 +9,9 @@ const SUGGESTED_QUERIES = [
     "Show maintenance due next week.",
     "Show all commercial vacancies.",
     "What is the total monthly revenue?",
-    "Which tenants are in Nexus Tower?",
-    "How many units are in GreenMall?",
+    "Which tenants are in MANARA HOMES?",
+    "How many units are in MANARA CENTER?",
+    "What is the occupancy of GRANDEUR GOLD?",
 ];
 
 const INITIAL_MESSAGES = [

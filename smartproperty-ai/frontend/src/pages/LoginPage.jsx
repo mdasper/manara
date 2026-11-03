@@ -100,6 +100,7 @@ export default function LoginPage() {
       email: tenant.email,
       unit: tenant.current_unit,
       property: tenant.current_property,
+      rent: tenant.current_rent,
     });
     router.push('/tenant-portal');
   };
@@ -573,7 +574,7 @@ export default function LoginPage() {
                     >
                       {tenantsList.map(t => (
                         <option key={t.id} value={t.id}>
-                          {t.name} — {t.phone} {t.current_unit ? `(Unit ${t.current_unit})` : ''}
+                          {t.name} — {t.current_property ? `${t.current_property} · ` : ''}{t.current_unit ? `Unit ${t.current_unit}` : ''}{t.current_rent ? ` (₹${Number(t.current_rent).toLocaleString('en-IN')}/mo)` : ''}
                         </option>
                       ))}
                     </select>

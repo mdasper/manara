@@ -89,6 +89,7 @@ class TenantResponse(TenantBase):
     updated_at: datetime
     current_unit: Optional[str] = None
     current_property: Optional[str] = None
+    current_rent: Optional[float] = None
 
     class Config:
         from_attributes = True

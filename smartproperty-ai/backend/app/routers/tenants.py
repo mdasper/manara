@@ -24,6 +24,7 @@ def enrich_tenant(tenant: Tenant, db: Session) -> TenantResponse:
         unit = db.query(Unit).filter(Unit.id == active_lease.unit_id).first()
         if unit:
             r.current_unit = unit.unit_number
+            r.current_rent = float(unit.rent_amount) if unit.rent_amount is not None else None
             prop = db.query(Property).filter(Property.id == unit.property_id).first()
             if prop:
                 r.current_property = prop.name
@@ -77,7 +78,25 @@ def delete_tenant(tenant_id: UUID, db: Session = Depends(get_db)):
 @router.get("/{tenant_id}/leases")
 def get_tenant_leases(tenant_id: UUID, db: Session = Depends(get_db)):
     leases = db.query(Lease).filter(Lease.tenant_id == tenant_id).all()
-    return leases
+    result = []
+    for l in leases:
+        unit = db.query(Unit).filter(Unit.id == l.unit_id).first()
+        prop = db.query(Property).filter(Property.id == unit.property_id).first() if unit else None
+        result.append({
+            "id": str(l.id),
+            "unit_id": str(l.unit_id),
+            "tenant_id": str(l.tenant_id),
+            "lease_start": str(l.lease_start),
+            "lease_end": str(l.lease_end),
+            "renewal_status": l.renewal_status.value if hasattr(l.renewal_status, "value") else str(l.renewal_status),
+            "rent_due_day": l.rent_due_day,
+            "exit_date": str(l.exit_date) if l.exit_date else None,
+            "notes": l.notes,
+            "unit_number": unit.unit_number if unit else None,
+            "rent_amount": float(unit.rent_amount) if unit and unit.rent_amount is not None else 0.0,
+            "property_name": prop.name if prop else None,
+        })
+    return result
 
 
 @router.get("/{tenant_id}/payments")
@@ -86,8 +105,19 @@ def get_tenant_payments(tenant_id: UUID, db: Session = Depends(get_db)):
     leases = db.query(Lease).filter(Lease.tenant_id == tenant_id).all()
     all_payments = []
     for lease in leases:
-        payments = db.query(Payment).filter(Payment.lease_id == lease.id).all()
-        all_payments.extend(payments)
+        payments = db.query(Payment).filter(Payment.lease_id == lease.id).order_by(Payment.due_date.desc()).all()
+        for p in payments:
+            all_payments.append({
+                "id": str(p.id),
+                "lease_id": str(p.lease_id),
+                "amount": float(p.amount) if p.amount is not None else 0.0,
+                "due_date": str(p.due_date) if p.due_date else None,
+                "paid_date": str(p.paid_date) if p.paid_date else None,
+                "status": p.status.value if hasattr(p.status, "value") else str(p.status),
+                "payment_mode": p.payment_mode,
+                "transaction_ref": p.transaction_ref,
+                "notes": p.notes,
+            })
     return all_payments
 
 
