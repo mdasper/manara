@@ -84,35 +84,24 @@ def seed_real_data():
         all_created_leases = []
 
         # ── PROPERTY 1: MANARA HOMES (13 Units) ──
-        # G01 (SBI ₹37,400), G02 (Poly Clinic ₹23,000)
-        # F1-F6 (₹6,000 each), S1-S3 (₹6,000 each), S4-S5 (₹8,000 each)
-        homes_configs = [
-            (0, "G01", UnitType.shop, 37400, "STATE BANK OF INDIA", "044-26154000", "sbi.branch@sbi.co.in", "Branch Manager", "Commercial"),
-            (0, "G02", UnitType.shop, 23000, "POLY CLINIC", "9840123456", "admin@polyclinic.in", "Dr. Senthil Kumar", "Commercial"),
-            (1, "F1", UnitType.apartment, 6000, "Karthik Ramanathan", "9840111001", "karthik.r@gmail.com", "Karthik", "1BHK"),
-            (1, "F2", UnitType.apartment, 6000, "Praveen Kumar", "9840111002", "praveen.k@gmail.com", "Praveen", "1BHK"),
-            (1, "F3", UnitType.apartment, 6000, "Meera Krishnan", "9840111003", "meera.k@gmail.com", "Meera", "1BHK"),
-            (1, "F4", UnitType.apartment, 6000, "Suresh Raina", "9840111004", "suresh.r@gmail.com", "Suresh", "1BHK"),
-            (1, "F5", UnitType.apartment, 6000, "Anand Natarajan", "9840111005", "anand.n@gmail.com", "Anand", "1BHK"),
-            (1, "F6", UnitType.apartment, 6000, "Divya Bharathi", "9840111006", "divya.b@gmail.com", "Divya", "1BHK"),
-            (2, "S1", UnitType.apartment, 6000, "Venkatesh S", "9840222001", "venkatesh.s@gmail.com", "Venkatesh", "1BHK"),
-            (2, "S2", UnitType.apartment, 6000, "Saravanan M", "9840222002", "saravanan.m@gmail.com", "Saravanan", "1BHK"),
-            (2, "S3", UnitType.apartment, 6000, "Gayathri R", "9840222003", "gayathri.r@gmail.com", "Gayathri", "1BHK"),
-            (2, "S4", UnitType.apartment, 8000, "Ramesh Babu", "9840333001", "ramesh.babu@gmail.com", "Ramesh", "2BHK"),
-            (2, "S5", UnitType.apartment, 8000, "Kavitha Sundaram", "9840333002", "kavitha.s@gmail.com", "Kavitha", "2BHK"),
+        # Occupied: G01 (STATE BANK OF INDIA ₹37,400), G02 (POLY CLINIC ₹23,000)
+        # Vacant: F1 to F6 (1BHK ₹6000), S1 to S3 (1BHK ₹6000), S4 and S5 (2BHK ₹8000)
+        homes_occupied = [
+            (0, "G01", UnitType.shop, 37400, "STATE BANK OF INDIA", "044-26154000", "sbi.branch@sbi.co.in", "Branch Manager", "Commercial Shop G01"),
+            (0, "G02", UnitType.shop, 23000, "POLY CLINIC", "9840123456", "admin@polyclinic.in", "Dr. Senthil Kumar", "Commercial Clinic G02"),
         ]
 
-        for floor, u_num, u_type, rent, t_name, phone, email, contact, u_cat in homes_configs:
+        for floor, u_num, u_type, rent, t_name, phone, email, contact, u_cat in homes_occupied:
             unit = Unit(
                 property_id=prop_homes.id,
                 floor_number=floor,
                 unit_number=u_num,
                 unit_type=u_type,
-                area_sqft=900 if "G" in u_num else (750 if "S4" in u_num or "S5" in u_num else 550),
+                area_sqft=900,
                 rent_amount=rent,
                 deposit_amount=rent * 2,
                 status=UnitStatus.occupied,
-                description=f"{u_cat} Unit {u_num} in MANARA HOMES"
+                description=f"{u_cat} in MANARA HOMES"
             )
             db.add(unit)
             db.commit()
@@ -135,17 +124,68 @@ def seed_real_data():
                 unit_id=unit.id,
                 tenant_id=tenant.id,
                 lease_start=date(2026, 1, 1),
-                lease_end=date(2027, 12, 31) if "G" in u_num else date(2026, 12, 31),
+                lease_end=date(2027, 12, 31),
                 rent_due_day=5,
                 renewal_status=RenewalStatus.active,
-                notes=f"Active Lease for {u_num}"
+                notes=f"Commercial Lease for {u_num}"
             )
             db.add(lease)
             db.commit()
             db.refresh(lease)
             all_created_leases.append((lease, rent))
 
-        print(f"✅ MANARA HOMES: 13 Units & Tenants seeded")
+        # Vacant: F1 to F6 (1BHK ₹6,000 each)
+        for i in range(1, 7):
+            u_num = f"F{i}"
+            u_vacant = Unit(
+                property_id=prop_homes.id,
+                floor_number=1,
+                unit_number=u_num,
+                unit_type=UnitType.apartment,
+                area_sqft=550,
+                rent_amount=6000,
+                deposit_amount=12000,
+                status=UnitStatus.vacant,
+                description=f"1BHK Residential Apartment {u_num} in MANARA HOMES — Vacant"
+            )
+            db.add(u_vacant)
+        db.commit()
+
+        # Vacant: S1 to S3 (1BHK ₹6,000 each)
+        for i in range(1, 4):
+            u_num = f"S{i}"
+            u_vacant = Unit(
+                property_id=prop_homes.id,
+                floor_number=2,
+                unit_number=u_num,
+                unit_type=UnitType.apartment,
+                area_sqft=550,
+                rent_amount=6000,
+                deposit_amount=12000,
+                status=UnitStatus.vacant,
+                description=f"1BHK Residential Apartment {u_num} in MANARA HOMES — Vacant"
+            )
+            db.add(u_vacant)
+        db.commit()
+
+        # Vacant: S4 and S5 (2BHK ₹8,000 each)
+        for i in [4, 5]:
+            u_num = f"S{i}"
+            u_vacant = Unit(
+                property_id=prop_homes.id,
+                floor_number=2,
+                unit_number=u_num,
+                unit_type=UnitType.apartment,
+                area_sqft=750,
+                rent_amount=8000,
+                deposit_amount=16000,
+                status=UnitStatus.vacant,
+                description=f"2BHK Residential Apartment {u_num} in MANARA HOMES — Vacant"
+            )
+            db.add(u_vacant)
+        db.commit()
+
+        print("✅ MANARA HOMES: 13 Units seeded (2 Occupied, 11 Vacant)")
 
         # ── PROPERTY 2: MANARA CENTER (23 Units) ──
         # Ground Floor Commercial: G01, G02, G03
