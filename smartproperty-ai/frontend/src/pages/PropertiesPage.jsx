@@ -8,6 +8,7 @@ const DEFAULT_IMAGES = {
   residential: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1000&q=80',
   commercial: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1000&q=80',
   shopping_complex: 'https://images.unsplash.com/photo-1519567241046-7f570eee3ce6?auto=format&fit=crop&w=1000&q=80',
+  mixed: 'https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=1000&q=80',
 };
 
 const TYPE_CONFIG = {
@@ -31,6 +32,13 @@ const TYPE_CONFIG = {
     badgeBorder: 'rgba(245, 158, 11, 0.35)',
     badgeColor: '#fbbf24',
     icon: '🛍️',
+  },
+  mixed: {
+    label: 'Mixed Use',
+    badgeBg: 'rgba(168, 85, 247, 0.15)',
+    badgeBorder: 'rgba(168, 85, 247, 0.35)',
+    badgeColor: '#c084fc',
+    icon: '🏙️',
   },
 };
 
@@ -301,9 +309,9 @@ export default function PropertiesPage() {
         <div className="properties-filter-tabs">
           {[
             { id: 'all', label: 'All Properties' },
-            { id: 'residential', label: 'Residential' },
+            { id: 'mixed', label: 'Mixed' },
             { id: 'commercial', label: 'Commercial' },
-            { id: 'shopping_complex', label: 'Shopping Complex' },
+            { id: 'residential', label: 'Residential' },
           ].map(f => {
             const isActive = filter === f.id;
             return (
