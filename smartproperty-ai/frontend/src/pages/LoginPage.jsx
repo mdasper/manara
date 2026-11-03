@@ -559,62 +559,30 @@ export default function LoginPage() {
                   {loadingTenants ? (
                     <div style={{ color: '#64748b', fontSize: '0.85rem' }}>Loading resident list...</div>
                   ) : (
-                    <>
-                      <select
-                        value={selectedTenantId}
-                        onChange={e => setSelectedTenantId(e.target.value)}
-                        style={{
-                          width: '100%',
-                          padding: '0.8rem 1rem',
-                          background: '#13132a',
-                          border: '1px solid rgba(255, 255, 255, 0.12)',
-                          borderRadius: '10px',
-                          color: '#ffffff',
-                          fontSize: '0.9rem',
-                          outline: 'none',
-                        }}
-                      >
-                        {Array.from(new Set(tenantsList.map(t => t.current_property || 'MANARA'))).map(propName => (
-                          <optgroup key={propName} label={propName} style={{ background: '#13132a', color: '#818cf8', fontWeight: 700 }}>
-                            {tenantsList.filter(t => (t.current_property || 'MANARA') === propName).map(t => (
-                              <option key={t.id} value={t.id} style={{ color: '#ffffff', fontWeight: 500 }}>
-                                {t.name} — Unit {t.current_unit || 'N/A'} (₹{Number(t.current_rent || 0).toLocaleString('en-IN')}/mo)
-                              </option>
-                            ))}
-                          </optgroup>
-                        ))}
-                      </select>
-
-                      {(() => {
-                        const sel = tenantsList.find(t => t.id === selectedTenantId);
-                        if (!sel) return null;
-                        return (
-                          <div style={{
-                            marginTop: '0.75rem',
-                            padding: '0.75rem 0.95rem',
-                            background: 'rgba(99, 102, 241, 0.08)',
-                            border: '1px solid rgba(99, 102, 241, 0.25)',
-                            borderRadius: '10px',
-                            fontSize: '0.82rem',
-                          }}>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                              <span style={{ color: '#94a3b8' }}>Resident:</span>
-                              <span style={{ fontWeight: 700, color: '#ffffff' }}>{sel.name}</span>
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                              <span style={{ color: '#94a3b8' }}>Property & Unit:</span>
-                              <span style={{ fontWeight: 600, color: '#c7d2fe' }}>{sel.current_property || 'MANARA'} · Unit {sel.current_unit}</span>
-                            </div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                              <span style={{ color: '#94a3b8' }}>Monthly Rent:</span>
-                              <span style={{ fontWeight: 800, color: '#10b981', fontSize: '0.92rem' }}>
-                                ₹{Number(sel.current_rent || 0).toLocaleString('en-IN')} / mo
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      })()}
-                    </>
+                    <select
+                      value={selectedTenantId}
+                      onChange={e => setSelectedTenantId(e.target.value)}
+                      style={{
+                        width: '100%',
+                        padding: '0.8rem 1rem',
+                        background: '#13132a',
+                        border: '1px solid rgba(255, 255, 255, 0.12)',
+                        borderRadius: '10px',
+                        color: '#ffffff',
+                        fontSize: '0.9rem',
+                        outline: 'none',
+                      }}
+                    >
+                      {Array.from(new Set(tenantsList.map(t => t.current_property || 'MANARA'))).map(propName => (
+                        <optgroup key={propName} label={propName} style={{ background: '#13132a', color: '#818cf8', fontWeight: 700 }}>
+                          {tenantsList.filter(t => (t.current_property || 'MANARA') === propName).map(t => (
+                            <option key={t.id} value={t.id} style={{ color: '#ffffff', fontWeight: 500 }}>
+                              {t.name} — Unit {t.current_unit || 'N/A'}
+                            </option>
+                          ))}
+                        </optgroup>
+                      ))}
+                    </select>
                   )}
                 </div>
 
@@ -731,7 +699,7 @@ export default function LoginPage() {
                       <option value="">-- Auto-Assign Unit --</option>
                       {vacantUnits.map(u => (
                         <option key={u.id} value={u.id}>
-                          Unit {u.unit_number} (₹{Number(u.rent_amount).toLocaleString('en-IN')})
+                          Unit {u.unit_number}
                         </option>
                       ))}
                     </select>
