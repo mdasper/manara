@@ -62,15 +62,18 @@ app.include_router(reports.router)
 def startup_event():
     try:
         from app.database import SessionLocal
-        from app.models import Property
+        from app.models import Property, Unit, UnitStatus
         from app.seed.seed_data import seed_real_data
         db = SessionLocal()
         manara_prop = db.query(Property).filter(Property.name == "MANARA HOMES").first()
-        if not manara_prop:
-            print("⚡ Real client data not found in DB. Seeding real client data...")
+        occupied_homes = db.query(Unit).filter(Unit.property_id == manara_prop.id, Unit.status == UnitStatus.occupied).count() if manara_prop else 0
+        
+        # If MANARA HOMES doesn't exist or has more than 2 occupied units (i.e. outdated seed), refresh real data
+        if not manara_prop or occupied_homes != 2:
+            print("⚡ Real client data not up-to-date in DB. Seeding real client data...")
             seed_real_data()
         else:
-            print("✅ Verified: Real client data present in DB.")
+            print("✅ Verified: Real client data present in DB with exact vacant units.")
         db.close()
     except Exception as e:
         print(f"Startup check warning: {e}")
