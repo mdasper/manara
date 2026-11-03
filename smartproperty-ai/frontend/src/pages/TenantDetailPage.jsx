@@ -136,6 +136,12 @@ export default function TenantDetailPage() {
                 {tenant.current_property || 'Not linked'}
               </span>
             </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid rgba(255,255,255,0.04)', paddingBottom: '0.5rem' }}>
+              <span style={{ color: 'var(--text-muted)' }}>Monthly Rent:</span>
+              <span style={{ fontWeight: 800, color: '#10b981' }}>
+                ₹{Number(tenant.current_rent || 0).toLocaleString('en-IN')} / mo
+              </span>
+            </div>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ color: 'var(--text-muted)' }}>Permanent Address:</span>
               <span style={{ fontWeight: 500, textAlign: 'right', maxWidth: '180px', color: 'var(--text-secondary)' }}>
@@ -229,6 +235,7 @@ export default function TenantDetailPage() {
               <thead>
                 <tr>
                   <th>Agreement Period</th>
+                  <th>Monthly Rent</th>
                   <th>Monthly Due Day</th>
                   <th>Renewal Status</th>
                   <th>Special Terms / Notes</th>
@@ -243,6 +250,9 @@ export default function TenantDetailPage() {
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
                         Standard 11-Months Tenancy
                       </div>
+                    </td>
+                    <td>
+                      <span style={{ fontWeight: 800, color: '#10b981' }}>₹{Number(l.rent_amount || tenant.current_rent || 0).toLocaleString('en-IN')}/mo</span>
                     </td>
                     <td>
                       <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>{l.rent_due_day}th</span>

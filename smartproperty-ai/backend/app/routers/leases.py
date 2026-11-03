@@ -21,6 +21,7 @@ def enrich_lease(lease: Lease, db: Session) -> LeaseResponse:
     unit = db.query(Unit).filter(Unit.id == lease.unit_id).first()
     if unit:
         r.unit_number = unit.unit_number
+        r.rent_amount = float(unit.rent_amount) if unit.rent_amount is not None else 0.0
         prop = db.query(Property).filter(Property.id == unit.property_id).first()
         if prop:
             r.property_name = prop.name

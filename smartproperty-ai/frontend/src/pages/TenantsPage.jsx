@@ -90,6 +90,7 @@ export default function TenantsPage() {
                 <th>Phone</th>
                 <th>Unit</th>
                 <th>Property</th>
+                <th>Monthly Rent</th>
                 <th>Documents</th>
                 <th>Actions</th>
               </tr>
@@ -124,6 +125,9 @@ export default function TenantsPage() {
                     {tenant.current_unit ? (<span className="badge badge-primary">{tenant.current_unit}</span>) : (<span className="badge badge-warning">Unassigned</span>)}
                   </td>
                   <td style={{ color: 'var(--text-primary)' }}>{tenant.current_property || '—'}</td>
+                  <td style={{ fontWeight: 700, color: '#10b981' }}>
+                    {tenant.current_rent ? `₹${Number(tenant.current_rent).toLocaleString('en-IN')}/mo` : '—'}
+                  </td>
                   <td>
                     <div className="flex gap-1">
                       {tenant.aadhaar_doc_url && <span className="badge badge-success" title="Aadhaar">ID</span>}

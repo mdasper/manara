@@ -209,7 +209,7 @@ export default function LeasesPage() {
                 return (<tr key={lease.id}>
                     <td>
                       <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Unit {unit?.unit_number || 'N/A'}</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>₹{unit?.rent_amount?.toLocaleString() || 0}/mo</div>
+                      <div style={{ fontSize: '0.75rem', color: '#10b981', fontWeight: 600 }}>₹{Number(lease.rent_amount || unit?.rent_amount || 0).toLocaleString('en-IN')}/mo</div>
                     </td>
                     <td>
                       <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{tenant?.name || 'Unknown'}</div>

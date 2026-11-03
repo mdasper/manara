@@ -11,7 +11,7 @@ const KPI_CONFIGS = [
     { key: 'upcoming_renewals', label: 'Renewals Due', icon: '📋', color: '#f59e0b', prefix: '', suffix: '' },
     { key: 'rent_due', label: 'Rent Overdue', icon: '⚠️', color: '#ef4444', prefix: '', suffix: '' },
     { key: 'maintenance_due', label: 'Maintenance Due', icon: '🔧', color: '#f59e0b', prefix: '', suffix: '' },
-    { key: 'monthly_revenue', label: 'Monthly Revenue', icon: '💰', color: '#10b981', prefix: '₹', suffix: '' },
+    { key: 'monthly_revenue', label: 'Total Portfolio Revenue', icon: '💰', color: '#10b981', prefix: '₹', suffix: '' },
     { key: 'occupancy_rate', label: 'Occupancy Rate', icon: '📈', color: '#6366f1', prefix: '', suffix: '%' },
 ];
 function formatValue(value, prefix, suffix, key) {

@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    DATABASE_URL: str = "postgresql://smartprop_user:smartprop_pass@localhost:5432/smartproperty"
+    DATABASE_URL: str = "sqlite:///./smartproperty.db"
     GEMINI_API_KEY: str = ""
     SECRET_KEY: str = "supersecretkey123changethis"
     ALGORITHM: str = "HS256"

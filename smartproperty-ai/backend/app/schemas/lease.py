@@ -38,6 +38,7 @@ class LeaseResponse(LeaseBase):
     property_type: Optional[str] = None
     tenant_name: Optional[str] = None
     tenant_phone: Optional[str] = None
+    rent_amount: Optional[float] = None
 
     class Config:
         from_attributes = True
