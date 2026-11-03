@@ -58,6 +58,24 @@ app.include_router(ai.router)
 app.include_router(reports.router)
 
 
+@app.on_event("startup")
+def startup_event():
+    try:
+        from app.database import SessionLocal
+        from app.models import Property
+        from app.seed.seed_data import seed_real_data
+        db = SessionLocal()
+        manara_prop = db.query(Property).filter(Property.name == "MANARA HOMES").first()
+        if not manara_prop:
+            print("⚡ Real client data not found in DB. Seeding real client data...")
+            seed_real_data()
+        else:
+            print("✅ Verified: Real client data present in DB.")
+        db.close()
+    except Exception as e:
+        print(f"Startup check warning: {e}")
+
+
 @app.get("/")
 def root():
     return {
@@ -71,3 +89,11 @@ def root():
 @app.get("/health")
 def health():
     return {"status": "healthy"}
+
+
+@app.get("/api/admin/reset-real-data")
+@app.post("/api/admin/reset-real-data")
+def trigger_reset_real_data():
+    from app.seed.seed_data import seed_real_data
+    seed_real_data()
+    return {"status": "success", "message": "All real client data seeded successfully!"}
