@@ -284,10 +284,6 @@ export default function TenantPortalPage() {
             </div>
           </div>
 
-          <Link to="/dashboard" className="btn btn-secondary" style={{ fontSize: '0.8rem', padding: '0.45rem 0.85rem' }}>
-            👑 Switch to Admin View
-          </Link>
-
           <button
             onClick={handleLogout}
             className="btn btn-secondary"
